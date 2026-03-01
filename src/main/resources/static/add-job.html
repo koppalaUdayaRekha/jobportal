@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Job</title>
+</head>
+<body>
+
+<h2>Add Job</h2>
+
+<form id="jobForm">
+    Title: <input type="text" id="title"><br><br>
+    Description: <input type="text" id="description"><br><br>
+    Company: <input type="text" id="company"><br><br>
+    Location: <input type="text" id="location"><br><br>
+
+    <button type="submit">Add Job</button>
+</form>
+
+<script>
+document.getElementById("jobForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const job = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        company: document.getElementById("company").value,
+        location: document.getElementById("location").value
+    };
+
+    fetch("http://localhost:7000/jobs/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(job)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Job Added Successfully!");
+    })
+    .catch(error => {
+        alert("Error adding job");
+    });
+});
+</script>
+
+</body>
+</html>

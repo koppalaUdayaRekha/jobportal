@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Applications</title>
+</head>
+<body>
+
+<h2>All Job Applications</h2>
+
+<div id="applicationsContainer"></div>
+
+<script>
+fetch("http://localhost:7000/applications/all")
+    .then(response => response.json())
+    .then(data => {
+
+        const container = document.getElementById("applicationsContainer");
+
+        data.forEach(app => {
+
+            const div = document.createElement("div");
+
+            div.innerHTML =
+                "Job ID: " + app.jobId + "<br>" +
+                "Email: " + app.userEmail + "<br>" +
+                "Applied Date: " + app.appliedDate + "<br><hr>";
+
+            container.appendChild(div);
+        });
+
+    })
+    .catch(error => {
+        alert("Error loading applications");
+    });
+</script>
+
+</body>
+</html>

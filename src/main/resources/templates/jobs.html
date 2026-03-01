@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Job Portal</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 30px;
+            color: white;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Search Box */
+        .search-box {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .search-box input {
+            padding: 10px;
+            width: 250px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+        }
+
+        .search-box button {
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: none;
+            background: #ff9800;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-box button:hover {
+            background: #e68900;
+        }
+
+        /* Job Cards */
+        .job-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            margin: 15px auto;
+            border-radius: 15px;
+            width: 450px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        .job-card:hover {
+            transform: scale(1.03);
+        }
+
+        .job-card h3 {
+            margin: 0;
+            color: #ffd700;
+        }
+
+        .job-card p {
+            margin: 5px 0;
+        }
+
+        /* Buttons */
+        .apply-btn {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .apply-btn:hover {
+            background: #1e7e34;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #a71d2a;
+        }
+
+        /* Pagination */
+        .pagination {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border-radius: 50%;
+            border: none;
+            margin: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .pagination button:hover {
+            background: #ff9800;
+            color: white;
+        }
+
+        .active-page {
+            background: #ff9800 !important;
+            color: white !important;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h2>🚀 Available Jobs</h2>
+
+<!-- 🔍 SEARCH -->
+<div class="search-box">
+    <form action="/jobs" method="get">
+        <input type="text" name="keyword"
+               placeholder="Search by title or location"
+               th:value="${keyword}">
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<!-- 📋 JOB LIST -->
+<div th:each="job : ${jobs}" class="job-card">
+    <h3 th:text="${job.title}"></h3>
+    <p><b>Company:</b> <span th:text="${job.company}"></span></p>
+    <p><b>Location:</b> <span th:text="${job.location}"></span></p>
+    <p th:text="${job.description}"></p>
+
+    <!-- APPLY -->
+    <form th:action="@{'/jobs/apply/' + ${job.id}}"
+          method="post"
+          style="display:inline;">
+        <button type="submit" class="apply-btn">Apply</button>
+    </form>
+
+    <!-- DELETE (ADMIN ONLY) -->
+    <form th:action="@{'/jobs/delete/' + ${job.id}}"
+          method="post"
+          style="display:inline;"
+          sec:authorize="hasRole('ADMIN')">
+        <button type="submit" class="delete-btn">Delete</button>
+    </form>
+</div>
+
+<!-- 🔢 PAGINATION -->
+<div class="pagination">
+
+    <span th:if="${currentPage > 0}">
+        <a th:href="@{/jobs(page=${currentPage - 1}, keyword=${keyword})}">
+            <button>←</button>
+        </a>
+    </span>
+
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:href="@{/jobs(page=${i}, keyword=${keyword})}">
+            <button th:text="${i + 1}"
+                    th:classappend="${i == currentPage} ? 'active-page' : ''">
+            </button>
+        </a>
+    </span>
+
+    <span th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/jobs(page=${currentPage + 1}, keyword=${keyword})}">
+            <button>→</button>
+        </a>
+    </span>
+
+</div>
+
+</body>
+</html>
